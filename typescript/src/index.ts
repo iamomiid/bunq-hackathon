@@ -5,9 +5,11 @@ import type {
 	BunqCreateUserResponse,
 	BunqInstallationResponse,
 	ClientKey,
+	GenerateSignature,
 } from "./types";
 
-const key = require("./client-key") as ClientKey;
+const generatedKey = require("./client-key") as ClientKey;
+const generateSignature = require("./session") as GenerateSignature;
 
 const client = axios.create({
 	baseURL: "https://public-api.sandbox.bunq.com",
@@ -34,6 +36,11 @@ const saveOrReturn = async <T>(fn: () => Promise<T>, fileName: string) => {
 };
 
 const run = async () => {
+	const key = await saveOrReturn(
+		() => Promise.resolve(generatedKey),
+		"bunq-client-key.json"
+	);
+
 	const user = await saveOrReturn(
 		() =>
 			client
@@ -58,23 +65,49 @@ const run = async () => {
 
 	const deviceServer = await saveOrReturn(
 		() =>
-			client.post(
-				"/v1/device-server",
-				{
-					description: "Postman",
-					secret: apiKey,
-					permitted_ips: ["*"],
-				},
-				{
-					headers: {
-						"X-Bunq-Client-Authentication": token,
+			client
+				.post(
+					"/v1/device-server",
+					{
+						description: "Postman",
+						secret: apiKey,
+						permitted_ips: ["*"],
 					},
-				}
-			),
+					{
+						headers: {
+							"X-Bunq-Client-Authentication": token,
+						},
+					}
+				)
+				.then((r) => r.data),
 		"bunq-device-server.json"
 	);
 
-	console.log({ deviceServer });
+	const sessionReq = JSON.stringify({
+		secret: apiKey,
+	});
+	const signature = generateSignature(sessionReq, key.private_key_client);
+
+	const sessionRes = await saveOrReturn(
+		() =>
+			client
+				.post(
+					"/v1/session-server",
+					{
+						secret: apiKey,
+					},
+					{
+						headers: {
+							"X-Bunq-Client-Authentication": token,
+							"X-Bunq-Client-Signature": signature,
+						},
+					}
+				)
+				.then((r) => r.data),
+		"bunq-session.json"
+	);
+
+	console.log({ sessionRes });
 };
 
 run();

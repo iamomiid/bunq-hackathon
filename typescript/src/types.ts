@@ -98,7 +98,7 @@ export interface Address {
 	country: string;
 	province: null;
 	extra: null;
-	mailbox_name?: string | null;
+	mailbox_name: string | null;
 	is_user_address_updated: boolean;
 	id: number;
 	created: string;
@@ -169,4 +169,97 @@ export interface BunqInstallationResponseItem {
 	ServerPublicKey?: {
 		server_public_key: string;
 	};
+}
+
+export type GenerateSignature = (body: string, privateKey: string) => string;
+
+// Add new interfaces for bunq session response
+export interface BunqSessionResponse {
+	Response: BunqSessionResponseItem[];
+}
+
+export interface BunqSessionResponseItem {
+	Id?: {
+		id: number;
+	};
+	Token?: {
+		id: number;
+		created: string;
+		updated: string;
+		token: string;
+	};
+	UserPerson?: UserPerson;
+}
+
+// Extend existing UserPerson interface with additional details from the JSON
+export interface UserPerson {
+	// ... existing properties
+	public_nick_name: string;
+	session_timeout: number;
+	daily_limit_without_confirmation_login: {
+		currency: string;
+		value: string;
+	};
+	avatar: {
+		uuid: string;
+		image: Array<{
+			attachment_public_uuid: string;
+			height: number;
+			width: number;
+			content_type: string;
+			urls: Array<{
+				type: string;
+				url: string;
+			}>;
+		}>;
+		anchor_uuid: string;
+		style: string;
+	};
+	notification_filters: Array<{
+		notification_delivery_method: string;
+		category: string;
+	}>;
+	address_main: Address;
+	address_postal: Address;
+	address_shipping: null;
+	first_name: string;
+	middle_name: string;
+	last_name: string;
+	legal_name: string;
+	date_of_birth: string;
+	place_of_birth: string;
+	country_of_birth: string;
+	nationality: string;
+	all_nationality: string[];
+	gender: string;
+	version_terms_of_service: string;
+	deny_reason: null;
+	document_issuing_authority: null;
+	document_expiry_date: null;
+	document_status: string;
+	is_primary_document: boolean;
+	customer: {
+		id: number;
+		created: string;
+		updated: string;
+		billing_account_id: number;
+		invoice_notification_preference: string;
+	};
+	customer_limit: CustomerLimit;
+	billing_contract: Array<{
+		BillingContractSubscription: {
+			id: number;
+			created: string;
+			updated: string;
+			contract_date_start: string;
+			contract_date_end: null;
+			contract_version: number;
+			subscription_type: string;
+			subscription_type_downgrade: null;
+			status: string;
+			sub_status: string;
+		};
+	}>;
+	pack_membership: null;
+	premium_trial: null;
 }
