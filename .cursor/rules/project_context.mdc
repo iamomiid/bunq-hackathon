@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Context: Bunq Budget Guard
+
+This project is about creating a Budget Guard integration for the Bunq banking app.
+
+The core idea is to allow users to set natural language budget limits on a specific "Budget Card". An AI agent then monitors transactions on this card, enforces limits, and interacts with the user if a limit is breached.
+
+For a detailed breakdown of the project goals and workflow, please refer to the main project rules document:
+
+Guard Project Rules
+
+## Project Goal
+
+To create a "Budget Guard" integration for the Bunq neo bank application. This app aims to help users manage their budgets more effectively by setting limits on a designated "Budget Card" and using an AI agent to monitor and enforce these limits.
+
+## Core Workflow
+
+1.  **Budget Card:** Users designate one of their Bunq cards as the "Budget Card". All budgeting rules apply specifically to this card.
+2.  **Limit Definition:** Users define monthly budget limits for the Budget Card.
+3.  **Natural Language Input:** Budget limits are created using natural language. Users describe the limit they want (e.g., "Limit spending on groceries to €200 per month", "Don't spend more than €50 on takeaways this week"), and an LLM interprets this input to create the formal budget rule.
+4.  **Limit Management:** Users can create, view, and delete budget limits.
+5.  **Limit Application:** Defined budget limits are actively enforced on the Budget Card.
+6.  **Transaction Monitoring:** An AI agent monitors every transaction made with the Budget Card.
+7.  **Enforcement Logic:**
+    *   The agent checks each transaction against all active budget limits.
+    *   **Limit Exceeded:** If a transaction violates a limit that has already been reached, the agent blocks the transaction and sets a hard limit on the card (effectively blocking it).
+    *   **Approaching Limit:** If a transaction falls under a limit but does not exceed the remaining budget for that limit, the transaction is allowed.
+    *   **No Applicable Limit:** If a transaction does not fall under any defined budget limit, it is allowed.
+8.  **Card Unblocking:** When the Budget Card is blocked due to exceeding a limit, the user must interact with the AI agent. The user needs to provide a justification or reason for exceeding the limit. If the AI agent is convinced (based on the reasoning and potentially the limit's strictness), it temporarily unblocks the card, allowing the *current* transaction. Subsequent transactions are still subject to the same checks.
+9.  **Strictness Levels:** Budget limits can have different levels of strictness (e.g., flexible, moderate, strict). This affects how easily the AI agent can be convinced to unblock the card. Higher strictness requires stronger justification.
+10. **User Benefit:** The primary goal is to provide users with an intelligent tool to enforce their budgeting goals and gain better control over their spending on the designated Budget Card. 
