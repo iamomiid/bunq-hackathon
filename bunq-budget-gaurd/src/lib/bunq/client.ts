@@ -7,6 +7,8 @@ export const bunqClient = axios.create({
   },
 });
 
+console.log("env in client", process.env.DATABASE_URL);
+
 bunqClient.interceptors.response.use(
   (response) => {
     return response;

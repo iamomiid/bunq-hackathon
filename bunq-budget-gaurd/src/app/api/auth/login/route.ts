@@ -18,6 +18,7 @@ const TOKEN_SECRET = process.env.SESSION_SECRET || "this-is-a-default-secret-key
 const TOKEN_NAME = "bunq_session";
 
 export async function POST(req: Request) {
+  console.log("env in login route", process.env.DATABASE_URL);
   try {
     const body = await req.json();
     const { apiKey } = body;
