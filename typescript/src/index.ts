@@ -2,8 +2,10 @@ import axios from "axios";
 import { nanoid } from "nanoid/non-secure";
 import { writeFile, readFile } from "fs/promises";
 import type {
+	BunqAccountResponse,
 	BunqCreateUserResponse,
 	BunqInstallationResponse,
+	BunqSessionResponse,
 	ClientKey,
 	GenerateSignature,
 } from "./types";
@@ -49,6 +51,7 @@ const run = async () => {
 		"bunq-user.json"
 	);
 
+	const userId = user.Response[0].ApiKey.user.UserPerson.id;
 	const apiKey = user.Response[0].ApiKey.api_key;
 
 	const installation = await saveOrReturn(
@@ -91,7 +94,7 @@ const run = async () => {
 	const sessionRes = await saveOrReturn(
 		() =>
 			client
-				.post(
+				.post<BunqSessionResponse>(
 					"/v1/session-server",
 					{
 						secret: apiKey,
@@ -107,7 +110,84 @@ const run = async () => {
 		"bunq-session.json"
 	);
 
-	console.log({ sessionRes });
+	const sessionToken = sessionRes.Response[1].Token!.token;
+
+	const account = await saveOrReturn<BunqAccountResponse>(
+		() =>
+			client
+				.post(
+					`/v1/user/${userId}/monetary-account-bank`,
+					{
+						currency: "EUR",
+						status: "ACTIVE",
+					},
+					{
+						headers: {
+							"X-Bunq-Client-Authentication": sessionToken,
+						},
+					}
+				)
+				.then((r) => r.data),
+		"bunq-account.json"
+	);
+
+	const accountId = account.Response[0].Id.id;
+
+	console.log(key.private_key_client);
+
+	// await client.post(
+	// 	`/v1/user/${userId}/monetary-account/${accountId}/request-inquiry`,
+	// 	{
+	// 		amount_inquired: {
+	// 			value: "500",
+	// 			currency: "EUR",
+	// 		},
+	// 		counterparty_alias: {
+	// 			type: "EMAIL",
+	// 			value: "sugardaddy@bunq.com",
+	// 			name: "Sugar Daddy",
+	// 		},
+	// 		description: "Youre the best!",
+	// 		allow_bunqme: false,
+	// 	},
+	// 	{
+	// 		headers: {
+	// 			"X-Bunq-Client-Authentication": sessionToken,
+	// 		},
+	// 	}
+	// );
+
+	// await client.post(
+	// 	`/v1/user/${userId}/notification-filter-url`,
+	// 	{
+	// 		notification_filters: [
+	// 			{
+	// 				category: "PAYMENT",
+	// 				notification_target: "https://pitiful-daughter-86.webhook.cool",
+	// 			},
+	// 		],
+	// 	},
+	// 	{
+	// 		headers: {
+	// 			"X-Bunq-Client-Authentication": sessionToken,
+	// 		},
+	// 	}
+	// );
+
+	// await client.post(
+	// 	`/v1/user/${userId}/monetary-account-bank/${accountId}`,
+	// 	{
+	// 		daily_limit: {
+	// 			currency: "EUR",
+	// 			value: "0",
+	// 		},
+	// 	},
+	// 	{
+	// 		headers: {
+	// 			"X-Bunq-Client-Authentication": sessionToken,
+	// 		},
+	// 	}
+	// );
 };
 
 run();

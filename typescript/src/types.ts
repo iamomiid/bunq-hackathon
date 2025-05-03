@@ -191,75 +191,104 @@ export interface BunqSessionResponseItem {
 	UserPerson?: UserPerson;
 }
 
-// Extend existing UserPerson interface with additional details from the JSON
-export interface UserPerson {
-	// ... existing properties
-	public_nick_name: string;
-	session_timeout: number;
-	daily_limit_without_confirmation_login: {
+export interface BunqAccountResponse {
+	Response: BunqAccountResponseItem[];
+}
+
+export interface BunqAccountResponseItem {
+	Id: {
+		id: number;
+	};
+}
+
+// Webhook Body Interfaces
+export interface WebhookBody {
+	NotificationUrl: {
+		target_url: string;
+		category: string;
+		event_type: string;
+		object: {
+			Payment: WebhookPayment;
+		};
+	};
+}
+
+export interface WebhookPayment {
+	id: number;
+	created: string;
+	updated: string;
+	monetary_account_id: number;
+	amount: {
 		currency: string;
 		value: string;
 	};
+	payment_fee: null | any;
+	description: string;
+	type: string;
+	merchant_reference: null | string;
+	maturity_date: string;
+	alias: WebhookAlias;
+	country: string;
+	counterparty_alias: WebhookAlias;
+	attachment: any[];
+	geolocation: null | any;
+	batch_id: null | number;
+	scheduled_id: null | number;
+	address_billing: null | any;
+	address_shipping: null | any;
+	sub_type: string;
+	status: string;
+	payment_arrival_expected: {
+		status: string;
+		time: null | string;
+	};
+	request_reference_split_the_bill: any[];
+	balance_after_mutation: {
+		currency: string;
+		value: string;
+	};
+	all_auto_save_entry: any[];
+	payment_auto_allocate_instance: null | any;
+	payment_suspended_outgoing: null | any;
+	bizum_payment: null | any;
+}
+
+export interface WebhookAlias {
+	iban: string;
+	is_light: boolean;
+	display_name: string;
 	avatar: {
 		uuid: string;
-		image: Array<{
-			attachment_public_uuid: string;
-			height: number;
-			width: number;
-			content_type: string;
-			urls: Array<{
-				type: string;
-				url: string;
-			}>;
-		}>;
-		anchor_uuid: string;
+		image: WebhookAvatarImage[];
+		anchor_uuid: null | string;
 		style: string;
 	};
-	notification_filters: Array<{
-		notification_delivery_method: string;
-		category: string;
-	}>;
-	address_main: Address;
-	address_postal: Address;
-	address_shipping: null;
-	first_name: string;
-	middle_name: string;
-	last_name: string;
-	legal_name: string;
-	date_of_birth: string;
-	place_of_birth: string;
-	country_of_birth: string;
-	nationality: string;
-	all_nationality: string[];
-	gender: string;
-	version_terms_of_service: string;
-	deny_reason: null;
-	document_issuing_authority: null;
-	document_expiry_date: null;
-	document_status: string;
-	is_primary_document: boolean;
-	customer: {
-		id: number;
-		created: string;
-		updated: string;
-		billing_account_id: number;
-		invoice_notification_preference: string;
-	};
-	customer_limit: CustomerLimit;
-	billing_contract: Array<{
-		BillingContractSubscription: {
-			id: number;
-			created: string;
-			updated: string;
-			contract_date_start: string;
-			contract_date_end: null;
-			contract_version: number;
-			subscription_type: string;
-			subscription_type_downgrade: null;
-			status: string;
-			sub_status: string;
+	label_user: {
+		uuid: string;
+		display_name: string;
+		country: string;
+		avatar: {
+			uuid: string;
+			image: WebhookAvatarImage[];
+			anchor_uuid: null | string;
+			style: string;
 		};
-	}>;
-	pack_membership: null;
-	premium_trial: null;
+		public_nick_name: string;
+		type: string;
+	};
+	public_nick_name: string;
+	type: string;
+}
+
+export interface WebhookAvatarImage {
+	attachment_public_uuid: string;
+	height: number;
+	width: number;
+	content_type: string;
+	urls: WebhookAvatarImageUrl[];
+}
+
+export interface WebhookAvatarImageUrl {
+	type: string;
+	url: string;
 }
