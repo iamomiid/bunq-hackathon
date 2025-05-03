@@ -7,6 +7,7 @@ import { budgetLimit, transaction, transactionToBudgetLimit, user } from "@/db/s
 import { eq, gte, lte } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { budgetLimitsWithUsage } from "@/db/schema/views";
+import { setDailyLimit } from "@/actions/daily-limit";
 
 const webhookSchema = z.object({
   NotificationUrl: z.object({
@@ -106,6 +107,7 @@ Categories: "${userCategories.map((c) => `ID: ${c.id}, Category: ${c.category}`)
     .where(gte(budgetLimitsWithUsage.currentUsage, budgetLimitsWithUsage.amount));
 
   if (threshold.length > 0) {
+    await setDailyLimit(0);
     return new Response("Threshold exceeded", { status: 200 });
   }
 

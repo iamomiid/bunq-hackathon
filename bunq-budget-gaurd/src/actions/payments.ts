@@ -24,13 +24,16 @@ const getDBUser = async () => {
   return dbUser;
 };
 
-export const getBalance = async () => {
+export const getAccount = async () => {
   const dbUser = await getDBUser();
 
   const account = await bunqClient.get<{
     Response: {
       MonetaryAccountBank: {
         balance: {
+          value: string;
+        };
+        daily_limit: {
           value: string;
         };
       };
@@ -41,7 +44,7 @@ export const getBalance = async () => {
     },
   });
 
-  return Number(account.data.Response[0].MonetaryAccountBank.balance.value);
+  return account.data;
 };
 
 export const addMoneyBySugarDadddy = async (amount: number) => {
@@ -93,4 +96,16 @@ export const doPayment = async (amount: number, description: string) => {
       },
     },
   );
+};
+
+export const getAccountInfo = async () => {
+  const dbUser = await getDBUser();
+  const account = await getAccount();
+
+  return {
+    balance: Number(account.Response[0].MonetaryAccountBank.balance.value),
+    dailyLimit: Number(account.Response[0].MonetaryAccountBank.daily_limit.value),
+    accountId: dbUser.accountId,
+    externalId: dbUser.externalId,
+  };
 };
