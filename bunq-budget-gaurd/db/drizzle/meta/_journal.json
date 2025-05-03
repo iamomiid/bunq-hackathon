@@ -15,6 +15,13 @@
       "when": 1746231551134,
       "tag": "0001_flaky_angel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1746233146919,
+      "tag": "0002_wealthy_lenny_balinger",
+      "breakpoints": true
     }
   ]
 }
