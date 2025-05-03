@@ -9,21 +9,29 @@ import { logoutAction } from "@/actions/auth-actions";
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const isDashboard = pathname.includes("/dashboard");
+  const isDashboard = pathname.startsWith("/dashboard");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center space-x-2">
+          {/* logo goes home or dashboard */}
+          <Link
+            href={isDashboard ? "/dashboard" : "/"}
+            className="flex items-center space-x-2"
+          >
             <BrandLogo />
             <span className="font-bold text-xl text-primary">BudgetGuard</span>
           </Link>
         </div>
+
         <nav className="hidden md:flex items-center gap-6">
           {isDashboard ? (
             <>
-              <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors">
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-foreground transition-colors"
+              >
                 Dashboard
               </Link>
               <Link
@@ -56,6 +64,7 @@ export function SiteHeader() {
             </>
           )}
         </nav>
+
         <div className="flex items-center gap-2">
           <ThemeToggle />
           {isDashboard ? (
