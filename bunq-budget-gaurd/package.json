@@ -12,7 +12,8 @@
     "db-migrate": "drizzle-kit migrate",
     "db-generate": "drizzle-kit generate",
     "db-check": "drizzle-kit check",
-    "db-studio": "drizzle-kit studio --port=3011"
+    "db-studio": "drizzle-kit studio --port=3011",
+    "db-genmig": "drizzle-kit generate && drizzle-kit migrate"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.21",
