@@ -5,16 +5,21 @@ import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { v4 as uuidv4 } from "uuid";
 import { generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { budgetLimitsWithUsage } from "../db/schema/views";
 import { createLimitPrompt } from "../prompts/create-limit";
 import { getSession } from "@/lib/auth";
+import { createOpenAI } from "@ai-sdk/openai";
 // Define the transaction JSON structure we expect
 interface TransactionJson {
   amount?: string | number;
   [key: string]: unknown;
 }
+
+const nvidia = createOpenAI({
+  baseURL: process.env.NVIDIA_BASE_URL,
+  apiKey: process.env.NVIDIA_API_KEY,
+});
 
 const limitDetailsSchema = z.object({
   category: z.string(),
@@ -112,7 +117,7 @@ export async function extractLimitDetails(description: string) {
     }
 
     const { object } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: nvidia("meta/llama-3.1-70b-instruct"),
       prompt: createLimitPrompt(description),
       temperature: 0.1,
       schema: limitDetailsSchema,

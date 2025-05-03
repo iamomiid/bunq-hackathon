@@ -187,7 +187,7 @@ export default function CreateLimit() {
                         <strong>Category:</strong> {extractedLimit.category}
                       </p>
                       <p>
-                        <strong>Amount:</strong> {extractedLimit.currency}
+                        <strong>Amount:</strong>
                         {extractedLimit.amount}
                       </p>
                       <p>
