@@ -1,5 +1,11 @@
 # Bunq Budget Guard
 
+## Testing through our websit
+- use your Bunq API key so sign in.
+- click on the "Create limit" to create new limits. (you can see them created in your dashboard)
+- then through the https://budgetguard.nl/dev path you can make transactions to test how categorization and limits are being set.
+- and last but not least, whenever you go above your limit, you have to chat with the AI Guard to convinve it let you make more transactions in the future.
+
 **Smart budgeting with AI for your Bunq card.**
 
 ## Quick Links
@@ -85,10 +91,6 @@ See the **docs/** folder for more details:
 2. Create a branch (`git checkout -b feature-name`)
 3. Make your changes, follow code style, and run `npm run lint`
 4. Open a Pull Request and describe your changes
-
-## License
-
-This project is part of a hackathon. See [LICENSE](LICENSE) for details.
 
 ---
 
