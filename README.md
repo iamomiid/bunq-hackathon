@@ -2,6 +2,13 @@
 
 **Smart budgeting with AI for your Bunq card.**
 
+## Quick Links
+- [Getting Started](docs/getting-started.md)  
+- [Installation](docs/getting-started.md#install-dependencies)  
+- [User Guide](docs/how-it-works.md)  
+- [API Reference](docs/api-reference.md)  
+- [How to Contribute](docs/contributing.md)  
+
 ## Description
 Bunq Budget Guard helps you stay on budget. You write simple rules in English, like “Limit groceries to €200 per month.” Our AI watches your Bunq card, blocks purchases that break your rules, and lets you ask for a one-time unblock if you need it.
 
@@ -27,12 +34,6 @@ Bunq Budget Guard helps you stay on budget. You write simple rules in English, l
    git clone https://github.com/kooroshkz/bunq-hackathon.git
    cd bunq-hackathon
 ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
 
 3. **Set up environment**
 
