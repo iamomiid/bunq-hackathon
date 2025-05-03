@@ -1,7 +1,7 @@
 "use server";
 
-import { budgetLimit, transaction, category } from "../db/schema/tables";
-import { eq, and } from "drizzle-orm";
+import { budgetLimit, transaction, transactionToBudgetLimit } from "../db/schema/tables";
+import { eq } from "drizzle-orm";
 import db from "../db";
 import { v4 as uuidv4 } from "uuid";
 import { generateObject } from "ai";
@@ -30,18 +30,20 @@ export async function getBudgetLimits() {
     // Get transaction info for each budget limit to calculate current spent amount
     const limitsWithSpending = await Promise.all(
       limits.map(async (limit) => {
-        const transactions = await db
-          .select()
+        // Get transactions related to this budget limit through the junction table
+        const relatedTransactions = await db
+          .select({
+            transaction: transaction,
+          })
           .from(transaction)
-          .where(eq(transaction.budgetLimit, limit.id));
+          .innerJoin(transactionToBudgetLimit, eq(transaction.id, transactionToBudgetLimit.transactionId))
+          .where(eq(transactionToBudgetLimit.budgetLimitId, limit.id));
 
         // Calculate current spent amount based on transactions
-        const currentSpent = transactions.reduce((acc, tx) => {
+        const currentSpent = relatedTransactions.reduce((acc, { transaction: tx }) => {
           // Safely cast json to TransactionJson type
           const txJson = tx.json as TransactionJson;
-          const txAmount = txJson.amount
-            ? parseFloat(txJson.amount.toString())
-            : 0;
+          const txAmount = txJson.amount ? parseFloat(txJson.amount.toString()) : 0;
           return acc + txAmount;
         }, 0);
 
@@ -55,7 +57,7 @@ export async function getBudgetLimits() {
           strictness: getStrictnessLabel(limit.strictnessLevel),
           title: limit.title,
         };
-      })
+      }),
     );
 
     return limitsWithSpending;
@@ -74,8 +76,8 @@ function getStrictnessLabel(level: number): string {
 
 export async function deleteBudgetLimit(id: string) {
   try {
-    // Delete related transactions first
-    await db.delete(transaction).where(eq(transaction.budgetLimit, id));
+    // Delete related transactions from junction table first
+    await db.delete(transactionToBudgetLimit).where(eq(transactionToBudgetLimit.budgetLimitId, id));
 
     // Then delete the budget limit
     await db.delete(budgetLimit).where(eq(budgetLimit.id, id));
@@ -140,41 +142,13 @@ export async function createBudgetLimit(description: string) {
       strict: 10,
     };
 
-    // Find or create category
-    let categoryId;
-    const existingCategory = await db
-      .select()
-      .from(category)
-      .where(
-        and(
-          eq(category.name, limitDetails.category),
-          eq(category.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (existingCategory.length > 0) {
-      categoryId = existingCategory[0].id;
-    } else {
-      // Create new category
-      const [newCategory] = await db
-        .insert(category)
-        .values({
-          id: uuidv4(),
-          name: limitDetails.category,
-          userId,
-        })
-        .returning();
-
-      categoryId = newCategory.id;
-    }
-
-    // Create budget limit
+    // Create budget limit using the category as a string directly
     const [newBudgetLimit] = await db
       .insert(budgetLimit)
       .values({
         id: uuidv4(),
-        category: categoryId,
+        userId,
+        category: limitDetails.category,
         amount: String(limitDetails.amount), // Convert amount to string for DB schema
         period: limitDetails.period,
         strictnessLevel: strictnessMap[limitDetails.strictness] || 5,
@@ -185,10 +159,6 @@ export async function createBudgetLimit(description: string) {
     return { success: true, budgetLimit: newBudgetLimit };
   } catch (error) {
     console.error("Error creating budget limit:", error);
-    throw new Error(
-      `Failed to create budget limit: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    throw new Error(`Failed to create budget limit: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
