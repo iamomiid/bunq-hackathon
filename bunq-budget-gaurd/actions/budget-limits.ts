@@ -9,6 +9,7 @@ import { openai } from "@ai-sdk/openai";
 import { getSession } from "../src/lib/auth";
 import { z } from "zod";
 import { budgetLimitsWithUsage } from "../db/schema/views";
+import { createLimitPrompt } from "../prompts/create-limit";
 // Define the transaction JSON structure we expect
 interface TransactionJson {
   amount?: string | number;
@@ -26,7 +27,15 @@ const limitDetailsSchema = z.object({
 
 export async function getBudgetLimits() {
   try {
-    const limits = await db.select().from(budgetLimitsWithUsage);
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error("Unauthorized - Missing User ID in session");
+    }
+
+    const limits = await db
+      .select()
+      .from(budgetLimitsWithUsage)
+      .where(eq(budgetLimitsWithUsage.userId, session.userId));
 
     // Get transaction info for each budget limit to calculate current spent amount
     const limitsWithSpending = await Promise.all(
@@ -104,14 +113,7 @@ export async function extractLimitDetails(description: string) {
 
     const { object } = await generateObject({
       model: openai("gpt-4.1-mini"),
-      prompt: `Extract budget limit details from this user input: "${description}". 
-              Return a JSON object with these properties:
-              - title: The title of the budget limit
-              - category: The spending category (e.g., groceries, entertainment, takeaways)
-              - amount: The monetary amount (as a number)
-              - currency: The currency symbol (e.g., €, $)
-              - period: The time period (e.g., day, week, month)
-              - strictness: Estimated strictness level (flexible, moderate, strict) based on wording`,
+      prompt: createLimitPrompt(description),
       temperature: 0.1,
       schema: limitDetailsSchema,
     });

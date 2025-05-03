@@ -1,10 +1,16 @@
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, CoreMessage, createDataStreamResponse, tool, Message } from "ai";
 import { NextRequest } from "next/server";
 import { setDailyLimit } from "../../../../actions/daily-limit";
 import { getLimitById } from "../../../../actions/budget-limits";
 import { SelectBudgetLimit } from "../../../../db/schema/views";
 import { z } from "zod";
+import { convincingPrompt } from "../../../../prompts/convincing";
+
+const nvidia = createOpenAI({
+  baseURL: "https://api.nvidia.com/v1",
+  apiKey: process.env.NVIDIA_API_KEY,
+});
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -43,29 +49,13 @@ const tools = {
 const getSystemMessage = (limitDetails: SelectBudgetLimit | null): CoreMessage => {
   return {
     role: "system",
-    content: `You are a budget assistant for Bunq bank. 
-A user has exceeded the following budget limit on their designated 'Budget Card':
-Limit ID: ${limitDetails?.id || "Unknown"}
-Limit Description: ${limitDetails?.title || "Unknown"}
-Limit Amount: ${limitDetails?.amount || "Unknown"} EUR
-Current Spending: ${limitDetails?.currentUsage ? Number(limitDetails.currentUsage).toFixed(2) : "Unknown"} EUR
-Exceeded By: ${
-      limitDetails?.currentUsage && limitDetails?.amount
-        ? (Number(limitDetails.currentUsage) - Number(limitDetails.amount)).toFixed(2)
-        : "Unknown"
-    } EUR
-Strictness Level: ${limitDetails?.strictnessLevel || "Medium"}
-
-The user's card is currently blocked due to exceeding this limit. 
-Their goal is to provide a justification for exceeding the limit to potentially unblock the card for this transaction.
-
-Evaluate their justification based on:
-1. The necessity of the purchase
-2. The strictness level of the limit (Stricter limits require stronger justification)
-3. How much they've exceeded the limit
-
-Ask clarifying questions if needed, but ultimately decide if the justification is reasonable enough to temporarily allow the transaction.
-Use the makeTransactionDecision tool to communicate your decision about unblocking the card.`,
+    content: !!limitDetails
+      ? convincingPrompt({
+          ...limitDetails,
+          currentUsage: limitDetails.currentUsage.toString(),
+          strictnessLevel: limitDetails.strictnessLevel.toString(),
+        })
+      : "",
   };
 };
 
@@ -95,7 +85,7 @@ export async function POST(req: NextRequest) {
     return createDataStreamResponse({
       execute: async (dataStream) => {
         const result = await streamText({
-          model: openai("gpt-4o"),
+          model: nvidia("gpt-4o"),
           messages: messagesWithSystemPrompt,
           temperature: 0.7,
           tools,
