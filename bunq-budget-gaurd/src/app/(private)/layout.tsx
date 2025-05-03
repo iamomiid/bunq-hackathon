@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex flex-col min-h-screen mx-auto max-w-7xl">
-      <SiteHeader />
+      <SiteHeader isAuthenticated={true} />
 
       <main className="flex-1 container py-10">{children}</main>
     </div>

@@ -87,7 +87,7 @@ export default function Dashboard({ isAccountLimited }: { isAccountLimited: bool
         <div className="bg-destructive/10 rounded-lg p-6 text-center">
           <h3 className="text-lg font-medium mb-2 text-destructive">Error</h3>
           <p className="mb-4">{error}</p>
-          {/* <Button onClick={() => window?.location.reload()}>Try Again</Button> */}
+          <Button onClick={() => window?.location.reload()}>Try Again</Button>
         </div>
       </>
     );

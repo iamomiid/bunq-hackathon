@@ -4,29 +4,22 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { usePathname } from "next/navigation";
 import { logoutAction } from "@/actions/auth-actions";
 
-export function SiteHeader() {
-  const pathname = usePathname();
-  const isDashboard = pathname.startsWith("/dashboard");
-
+export function SiteHeader({ isAuthenticated }: { isAuthenticated: boolean }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           {/* logo goes home or dashboard */}
-          <Link
-            href={isDashboard ? "/dashboard" : "/"}
-            className="flex items-center space-x-2"
-          >
+          <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <BrandLogo />
             <span className="font-bold text-xl text-primary">BudgetGuard</span>
           </Link>
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          {isDashboard ? (
+          {isAuthenticated ? (
             <>
               <Link
                 href="/dashboard"
@@ -67,7 +60,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          {isDashboard ? (
+          {isAuthenticated ? (
             <Button size="sm" variant="outline" onClick={() => logoutAction()}>
               Sign Out
             </Button>

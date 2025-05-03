@@ -16,8 +16,8 @@ interface PageLayoutProps {
 export function PageLayout({ children, title, action }: PageLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen mx-auto max-w-7xl">
-      <SiteHeader />
-      
+      <SiteHeader isAuthenticated={false} />
+
       <main className="flex-1 container max-w-6xl py-10">
         {(title || action) && (
           <div className="flex justify-between items-center mb-8">
@@ -25,9 +25,9 @@ export function PageLayout({ children, title, action }: PageLayoutProps) {
             {action && <div>{action}</div>}
           </div>
         )}
-        
+
         {children}
       </main>
     </div>
   );
-} 
+}
