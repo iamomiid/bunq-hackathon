@@ -6,9 +6,10 @@ import { SelectBudgetLimit } from "../../../../../../db/schema/views";
 
 interface LimitExceededClientProps {
   limitDetails: SelectBudgetLimit;
+  isAccountLimited: boolean;
 }
 
-export default function LimitExceededClient({ limitDetails }: LimitExceededClientProps) {
+export default function LimitExceededClient({ limitDetails, isAccountLimited }: LimitExceededClientProps) {
   // Initialize chat with the limitId
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     // Pass the limitId to the API
@@ -21,7 +22,7 @@ export default function LimitExceededClient({ limitDetails }: LimitExceededClien
     <div className="container mx-auto px-4 py-8 flex flex-col h-[calc(100vh-4rem)]">
       <h1 className="text-2xl font-bold mb-4">Limit Exceeded</h1>
 
-      <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded">
+      <div className="mb-4 p-4 bg-red-20 border border-red-200 rounded">
         <h2 className="text-lg font-semibold">{limitDetails.title || limitDetails.category}</h2>
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div>
@@ -34,7 +35,7 @@ export default function LimitExceededClient({ limitDetails }: LimitExceededClien
           </div>
           <div>
             <p className="text-sm text-gray-600">Exceeded By</p>
-            <p className="text-red-600">
+            <p className={`${isAccountLimited ? "text-red-600" : "text-yellow-600"}`}>
               {(Number(limitDetails.currentUsage) - Number(limitDetails.amount)).toFixed(2)} EUR
             </p>
           </div>
@@ -43,7 +44,9 @@ export default function LimitExceededClient({ limitDetails }: LimitExceededClien
             <p>{limitDetails.strictnessLevel}</p>
           </div>
         </div>
-        <p className="mt-3 text-red-600 font-medium">Your card is currently blocked.</p>
+        <p className={`mt-3 ${isAccountLimited ? "text-red-600" : "text-yellow-600"} font-medium`}>
+          {isAccountLimited ? "Your card is currently blocked." : "Your card is has been temporarily unblocked."}
+        </p>
       </div>
 
       {/* Chat UI */}
