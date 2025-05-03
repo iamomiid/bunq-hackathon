@@ -16,6 +16,11 @@ import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import {
+  extractLimitDetails,
+  createBudgetLimit,
+} from "../../../../../actions/budget-limits";
+import { handleApiResponse } from "@/lib/api-response";
 
 interface BudgetLimit {
   category: string;
@@ -23,6 +28,7 @@ interface BudgetLimit {
   currency: string;
   period: string;
   strictness: "flexible" | "moderate" | "strict";
+  title?: string;
 }
 
 export default function CreateLimit() {
@@ -36,70 +42,6 @@ export default function CreateLimit() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const extractLimitDetails = async (
-    description: string
-  ): Promise<BudgetLimit> => {
-    try {
-      setIsProcessing(true);
-      setError(null);
-
-      const response = await fetch("/api/extract-limit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ description }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to extract limit details");
-      }
-
-      const data = await response.json();
-      return data.limitDetails;
-    } catch (error) {
-      console.error("Error extracting limit details:", error);
-      throw error;
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const saveBudgetLimit = async (): Promise<void> => {
-    try {
-      setIsSaving(true);
-      setError(null);
-      setSuccess(null);
-
-      const response = await fetch("/api/extract-limit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          description: input,
-          shouldSave: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save budget limit");
-      }
-
-      setSuccess("Budget limit saved successfully!");
-
-      // Redirect to dashboard after short delay
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 2000);
-    } catch (error) {
-      console.error("Error saving budget limit:", error);
-      setError("Failed to save budget limit. Please try again.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -108,14 +50,52 @@ export default function CreateLimit() {
       return;
     }
 
-    try {
-      const limitDetails = await extractLimitDetails(input);
-      setExtractedLimit(limitDetails);
-      console.log("Extracted limit details:", limitDetails);
-    } catch {
+    setIsProcessing(true);
+    setError(null);
+
+    const { data, error: extractError } = await handleApiResponse(
+      extractLimitDetails(input)
+    );
+
+    setIsProcessing(false);
+
+    if (extractError) {
       setError(
-        "Failed to parse your budget limit. Please try again with a clearer description."
+        extractError ||
+          "Failed to parse your budget limit. Please try again with a clearer description."
       );
+      return;
+    }
+
+    if (data) {
+      setExtractedLimit(data);
+      console.log("Extracted limit details:", data);
+    }
+  };
+
+  const saveBudgetLimit = async (): Promise<void> => {
+    setIsSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    const { data, error: saveError } = await handleApiResponse(
+      createBudgetLimit(input)
+    );
+
+    setIsSaving(false);
+
+    if (saveError) {
+      setError(saveError || "Failed to save budget limit. Please try again.");
+      return;
+    }
+
+    if (data && data.success) {
+      setSuccess("Budget limit saved successfully!");
+
+      // Redirect to dashboard after short delay
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
     }
   };
 

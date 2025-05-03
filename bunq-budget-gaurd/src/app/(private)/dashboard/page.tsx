@@ -1,51 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { PlusCircle, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import {
+  getBudgetLimits,
+  deleteBudgetLimit,
+} from "../../../../actions/budget-limits";
 
-// Mock data for budget limits - this would be fetched from your API/database
-const initialBudgetLimits = [
-  {
-    id: "1",
-    description: "Limit spending on groceries to €200 per month",
-    category: "Groceries",
-    amount: 200,
-    period: "Monthly",
-    currentSpent: 120,
-    strictness: "Moderate",
-  },
-  {
-    id: "2",
-    description: "Don't spend more than €50 on takeaways this week",
-    category: "Food & Dining",
-    amount: 50,
-    period: "Weekly",
-    currentSpent: 35,
-    strictness: "Strict",
-  },
-  {
-    id: "3",
-    description: "Keep entertainment expenses under €100 this month",
-    category: "Entertainment",
-    amount: 100,
-    period: "Monthly",
-    currentSpent: 45,
-    strictness: "Flexible",
-  },
-];
+// Define the budget limit type
+interface BudgetLimit {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  period: string;
+  currentSpent: number;
+  strictness: string;
+  title: string | null;
+}
 
 export default function Dashboard() {
-  const [budgetLimits, setBudgetLimits] = useState(initialBudgetLimits);
+  const [budgetLimits, setBudgetLimits] = useState<BudgetLimit[]>([]);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDeleteLimit = (id: string) => {
-    // In a real app, this would call your API to delete the limit
-    setBudgetLimits(budgetLimits.filter(limit => limit.id !== id));
-    setDeleteConfirmId(null);
+  // Fetch budget limits from the database
+  useEffect(() => {
+    const fetchBudgetLimits = async () => {
+      try {
+        setIsLoading(true);
+        const limits = await getBudgetLimits();
+        setBudgetLimits(limits);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching budget limits:", error);
+        setError("Failed to load budget limits");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBudgetLimits();
+  }, []);
+
+  const handleDeleteLimit = async (id: string) => {
+    try {
+      await deleteBudgetLimit(id);
+      setBudgetLimits(budgetLimits.filter((limit) => limit.id !== id));
+      setDeleteConfirmId(null);
+    } catch (error) {
+      console.error("Error deleting budget limit:", error);
+      setError("Failed to delete budget limit");
+    }
   };
 
   const actionButton = (
@@ -57,10 +75,34 @@ export default function Dashboard() {
     </Button>
   );
 
+  if (isLoading) {
+    return (
+      <>
+        <PageHeader title="Budget Limits" action={actionButton} />
+        <div className="flex justify-center items-center py-10">
+          <p>Loading budget limits...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <PageHeader title="Budget Limits" action={actionButton} />
+        <div className="bg-destructive/10 rounded-lg p-6 text-center">
+          <h3 className="text-lg font-medium mb-2 text-destructive">Error</h3>
+          <p className="mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader title="Budget Limits" action={actionButton} />
-      
+
       {budgetLimits.length === 0 ? (
         <div className="bg-muted/50 rounded-lg p-8 text-center">
           <h3 className="text-lg font-medium mb-2">No budget limits yet</h3>
@@ -79,8 +121,10 @@ export default function Dashboard() {
           {budgetLimits.map((limit) => (
             <Card key={limit.id} className="overflow-hidden">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">{limit.category}</CardTitle>
-                <CardDescription className="line-clamp-2">{limit.description}</CardDescription>
+                <CardTitle className="text-lg">{limit.title}</CardTitle>
+                <CardDescription className="line-clamp-2">
+                  {limit.description}
+                </CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="mb-4">
@@ -94,9 +138,11 @@ export default function Dashboard() {
                     Remaining: €{(limit.amount - limit.currentSpent).toFixed(2)}
                   </p>
                   <div className="w-full bg-muted rounded-full h-2.5">
-                    <div 
-                      className="bg-primary h-2.5 rounded-full" 
-                      style={{ width: `${(limit.currentSpent / limit.amount) * 100}%` }}
+                    <div
+                      className="bg-primary h-2.5 rounded-full"
+                      style={{
+                        width: `${(limit.currentSpent / limit.amount) * 100}%`,
+                      }}
                     ></div>
                   </div>
                 </div>
@@ -114,15 +160,15 @@ export default function Dashboard() {
                 </Button>
                 {deleteConfirmId === limit.id ? (
                   <div className="flex gap-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => setDeleteConfirmId(null)}
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      variant="destructive" 
+                    <Button
+                      variant="destructive"
                       size="sm"
                       onClick={() => handleDeleteLimit(limit.id)}
                     >
@@ -130,8 +176,8 @@ export default function Dashboard() {
                     </Button>
                   </div>
                 ) : (
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     size="sm"
                     onClick={() => setDeleteConfirmId(limit.id)}
                   >
@@ -146,4 +192,4 @@ export default function Dashboard() {
       )}
     </>
   );
-} 
+}

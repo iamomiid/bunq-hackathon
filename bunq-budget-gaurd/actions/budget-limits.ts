@@ -1,0 +1,194 @@
+"use server";
+
+import { budgetLimit, transaction, category } from "../db/schema/tables";
+import { eq, and } from "drizzle-orm";
+import db from "../db";
+import { v4 as uuidv4 } from "uuid";
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { getSession } from "../src/lib/auth";
+
+// Define the transaction JSON structure we expect
+interface TransactionJson {
+  amount?: string | number;
+  [key: string]: unknown;
+}
+
+interface LimitDetails {
+  category: string;
+  amount: number;
+  currency: string;
+  period: string;
+  strictness: "flexible" | "moderate" | "strict";
+  title: string;
+}
+
+export async function getBudgetLimits() {
+  try {
+    const limits = await db.select().from(budgetLimit);
+
+    // Get transaction info for each budget limit to calculate current spent amount
+    const limitsWithSpending = await Promise.all(
+      limits.map(async (limit) => {
+        const transactions = await db
+          .select()
+          .from(transaction)
+          .where(eq(transaction.budgetLimit, limit.id));
+
+        // Calculate current spent amount based on transactions
+        const currentSpent = transactions.reduce((acc, tx) => {
+          // Safely cast json to TransactionJson type
+          const txJson = tx.json as TransactionJson;
+          const txAmount = txJson.amount
+            ? parseFloat(txJson.amount.toString())
+            : 0;
+          return acc + txAmount;
+        }, 0);
+
+        return {
+          id: limit.id,
+          description: `Limit spending on ${limit.category} to €${limit.amount} per ${limit.period}`,
+          category: limit.category,
+          amount: parseFloat(limit.amount.toString()),
+          period: limit.period.charAt(0).toUpperCase() + limit.period.slice(1),
+          currentSpent,
+          strictness: getStrictnessLabel(limit.strictnessLevel),
+          title: limit.title,
+        };
+      })
+    );
+
+    return limitsWithSpending;
+  } catch (error) {
+    console.error("Error fetching budget limits:", error);
+    throw new Error("Failed to fetch budget limits");
+  }
+}
+
+// Helper function to convert strictness level to label
+function getStrictnessLabel(level: number): string {
+  if (level <= 3) return "Flexible";
+  if (level <= 7) return "Moderate";
+  return "Strict";
+}
+
+export async function deleteBudgetLimit(id: string) {
+  try {
+    // Delete related transactions first
+    await db.delete(transaction).where(eq(transaction.budgetLimit, id));
+
+    // Then delete the budget limit
+    await db.delete(budgetLimit).where(eq(budgetLimit.id, id));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting budget limit:", error);
+    throw new Error("Failed to delete budget limit");
+  }
+}
+
+export async function extractLimitDetails(description: string) {
+  try {
+    if (!description || typeof description !== "string") {
+      throw new Error("Description is required");
+    }
+
+    const { object } = await generateObject({
+      model: openai("gpt-4.1-mini"),
+      prompt: `Extract budget limit details from this user input: "${description}". 
+              Return a JSON object with these properties:
+              - title: The title of the budget limit
+              - category: The spending category (e.g., groceries, entertainment, takeaways)
+              - amount: The monetary amount (as a number)
+              - currency: The currency symbol (e.g., €, $)
+              - period: The time period (e.g., day, week, month)
+              - strictness: Estimated strictness level (flexible, moderate, strict) based on wording`,
+      temperature: 0.1,
+      output: "no-schema",
+    });
+
+    // Parse the response as JSON - Use unknown for safer type assertion
+    return object as unknown as LimitDetails;
+  } catch (error) {
+    console.error("Error extracting limit details:", error);
+    throw new Error("Failed to extract limit details");
+  }
+}
+
+export async function createBudgetLimit(description: string) {
+  try {
+    const session = await getSession();
+
+    // Check for authentication
+    if (!session?.apiKey) {
+      throw new Error("Unauthorized - Missing API Key");
+    }
+
+    // Assuming userId is needed and stored in session
+    const userId = session?.userId;
+    if (!userId) {
+      throw new Error("Unauthorized - Missing User ID in session");
+    }
+
+    // Extract limit details from description
+    const limitDetails = await extractLimitDetails(description);
+
+    // Map strictness level from text to number
+    const strictnessMap = {
+      flexible: 1,
+      moderate: 5,
+      strict: 10,
+    };
+
+    // Find or create category
+    let categoryId;
+    const existingCategory = await db
+      .select()
+      .from(category)
+      .where(
+        and(
+          eq(category.name, limitDetails.category),
+          eq(category.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (existingCategory.length > 0) {
+      categoryId = existingCategory[0].id;
+    } else {
+      // Create new category
+      const [newCategory] = await db
+        .insert(category)
+        .values({
+          id: uuidv4(),
+          name: limitDetails.category,
+          userId,
+        })
+        .returning();
+
+      categoryId = newCategory.id;
+    }
+
+    // Create budget limit
+    const [newBudgetLimit] = await db
+      .insert(budgetLimit)
+      .values({
+        id: uuidv4(),
+        category: categoryId,
+        amount: String(limitDetails.amount), // Convert amount to string for DB schema
+        period: limitDetails.period,
+        strictnessLevel: strictnessMap[limitDetails.strictness] || 5,
+        title: limitDetails.title,
+      })
+      .returning();
+
+    return { success: true, budgetLimit: newBudgetLimit };
+  } catch (error) {
+    console.error("Error creating budget limit:", error);
+    throw new Error(
+      `Failed to create budget limit: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}

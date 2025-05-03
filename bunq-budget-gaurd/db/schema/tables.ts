@@ -28,6 +28,7 @@ export const budgetLimit = pgTable("budget_limit", {
   period: text("period").default("month").notNull(),
   strictnessLevel: integer("strictness_level").default(5).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  title: text("title"),
 });
 
 export const transaction = pgTable("transaction", {
