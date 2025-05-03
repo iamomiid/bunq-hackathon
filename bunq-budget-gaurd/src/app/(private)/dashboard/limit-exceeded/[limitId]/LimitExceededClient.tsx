@@ -4,6 +4,9 @@ import React, { useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { SelectBudgetLimit } from "@/db/schema/views";
 import ReactMarkdown from "react-markdown";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface LimitExceededClientProps {
   limitDetails: SelectBudgetLimit;
@@ -12,7 +15,7 @@ interface LimitExceededClientProps {
 
 export default function LimitExceededClient({ limitDetails, isAccountLimited }: LimitExceededClientProps) {
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   // Initialize chat with the limitId
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     // Pass the limitId to the API
@@ -64,6 +67,15 @@ export default function LimitExceededClient({ limitDetails, isAccountLimited }: 
             {isAccountLimited ? "Your card is currently blocked." : "Your card has been temporarily unblocked."}
           </div>
         </div>
+        <Link href={`/dashboard/limit-exceeded/${limitDetails.id}/conversation`}>
+          <Button
+            size={"lg"}
+            variant="outline"
+            className="mt-4 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+          >
+            Or try to convince the grumpy BudgetGuard in voice!
+          </Button>
+        </Link>
       </div>
 
       {/* Right column - Chat UI */}

@@ -60,7 +60,7 @@ export function ConvAI() {
 
   return (
     <div className={"flex justify-center items-center gap-x-4"}>
-      <Card className={"rounded-3xl"}>
+      <Card>
         <CardContent>
           <CardHeader>
             <CardTitle className={"text-center"}>
@@ -72,16 +72,7 @@ export function ConvAI() {
             </CardTitle>
           </CardHeader>
           <div className={"flex flex-col gap-y-4 text-center"}>
-            <div
-              className={cn(
-                "orb my-16 mx-12",
-                conversation.status === "connected" && conversation.isSpeaking
-                  ? "orb-active animate-orb"
-                  : conversation.status === "connected"
-                  ? "animate-orb-slow orb-inactive"
-                  : "orb-inactive",
-              )}
-            ></div>
+            <img src="/image.png" alt="Budget Guard" className="w-1/3 mx-auto rounded-full" />
 
             <Button
               variant={"outline"}
