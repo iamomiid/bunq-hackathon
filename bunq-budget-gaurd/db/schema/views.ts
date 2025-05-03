@@ -1,16 +1,15 @@
 import { sql } from "drizzle-orm";
 import { pgView } from "drizzle-orm/pg-core";
 import { budgetLimit, transaction, transactionToBudgetLimit } from "./tables";
-import db from ".."; // Assuming db instance is exported from index
 import { alias } from "drizzle-orm/pg-core";
 
-// Use a SQL-based approach for creating the view to avoid type errors
+// Define the view using SQL builder directly without db instance
 export const budgetLimitsWithUsage = pgView("budget_limits_with_usage").as((qb) => {
   const t = alias(transaction, "t"); // Alias the transaction table as 't'
 
-  // Subquery to calculate the sum of transactions for each budget limit in the current month
-  const monthlySumsSubquery = db.$with("monthly_sums").as(
-    db
+  // Define the monthly sums CTE
+  const monthlySumsSubquery = qb.$with("monthly_sums").as(
+    qb
       .select({
         budgetLimitId: transactionToBudgetLimit.budgetLimitId,
         // Use explicit casting and SUM aggregate function, referencing the alias 't'
