@@ -6,7 +6,6 @@ import db from "../db";
 import { getSession } from "@/lib/auth";
 import { user } from "../db/schema/tables";
 import type { PaymentAccountDetailsResponse } from "@/lib/bunq/types";
-import { MIN_DAILY_LIMIT } from "./daily-limit";
 
 export const isAccountLimited = async () => {
   const session = await getSession();
@@ -31,5 +30,5 @@ export const isAccountLimited = async () => {
     })
     .then((res) => res.data);
 
-  return account.Response[0].MonetaryAccountBank.daily_limit.value === MIN_DAILY_LIMIT.toString();
+  return account.Response[0].MonetaryAccountBank.daily_limit.value === "0";
 };

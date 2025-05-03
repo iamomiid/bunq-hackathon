@@ -5,10 +5,6 @@ import { eq } from "drizzle-orm";
 import { user } from "../db/schema/tables";
 import { bunqClient } from "@/lib/bunq/client";
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
-
-export const MIN_DAILY_LIMIT = 0;
-export const MAX_DAILY_LIMIT = 10_000;
 
 export const setDailyLimit = async (amount: number) => {
   console.log("Setting daily limit:", amount);
@@ -42,7 +38,6 @@ export const setDailyLimit = async (amount: number) => {
       },
     )
     .then((res) => {
-      if (amount === 10_000) toast("Your account has been unlocked.");
       redirect("/dashboard");
     });
 };
