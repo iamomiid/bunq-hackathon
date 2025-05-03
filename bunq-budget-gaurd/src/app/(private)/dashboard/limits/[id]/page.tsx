@@ -63,7 +63,7 @@ export default function LimitDetailsPage() {
       <PageHeader title={`${limitData.category} Budget Limit`} action={backButton} />
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Budget Details</CardTitle>
           </CardHeader>
