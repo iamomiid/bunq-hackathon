@@ -8,7 +8,7 @@ import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getSession } from "../src/lib/auth";
 import { z } from "zod";
-
+import { budgetLimitsWithUsage } from "../db/schema/views";
 // Define the transaction JSON structure we expect
 interface TransactionJson {
   amount?: string | number;
@@ -26,7 +26,7 @@ const limitDetailsSchema = z.object({
 
 export async function getBudgetLimits() {
   try {
-    const limits = await db.select().from(budgetLimit);
+    const limits = await db.select().from(budgetLimitsWithUsage);
 
     // Get transaction info for each budget limit to calculate current spent amount
     const limitsWithSpending = await Promise.all(
@@ -57,6 +57,7 @@ export async function getBudgetLimits() {
           currentSpent,
           strictness: getStrictnessLabel(limit.strictnessLevel),
           title: limit.title,
+          currentUsage: parseFloat(limit.currentUsage.toString()),
         };
       }),
     );
@@ -67,6 +68,11 @@ export async function getBudgetLimits() {
     throw new Error("Failed to fetch budget limits");
   }
 }
+
+export const getLimitById = async (id: string) => {
+  const limit = await db.select().from(budgetLimitsWithUsage).where(eq(budgetLimitsWithUsage.id, id));
+  return limit[0];
+};
 
 // Helper function to convert strictness level to label
 function getStrictnessLabel(level: number): string {
