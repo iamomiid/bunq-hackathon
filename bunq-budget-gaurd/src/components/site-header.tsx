@@ -17,7 +17,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
             <BrandLogo />
-            <span className="font-bold text-xl text-primary">BunqGuard</span>
+            <span className="font-bold text-xl text-primary">BudgetGuard</span>
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6">

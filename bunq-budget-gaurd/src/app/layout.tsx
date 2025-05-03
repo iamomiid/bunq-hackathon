@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bunq Budget Guard | AI-Powered Spending Limits",
-  description: "Set natural language budget limits on your Bunq cards. AI-powered transaction monitoring for smarter spending control.",
+  title: "BudgetGuard | AI-Powered Spending Limits",
+  description: "Set natural language budget limits on your cards. AI-powered transaction monitoring for smarter spending control.",
 };
 
 export default function RootLayout({
@@ -24,9 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
