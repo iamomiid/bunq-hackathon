@@ -30,5 +30,5 @@ export const isAccountLimited = async () => {
     })
     .then((res) => res.data);
 
-  return account.Response[0].MonetaryAccountBank.daily_limit.value === "0";
+  return Number(account.Response[0].MonetaryAccountBank.daily_limit.value) === 0;
 };

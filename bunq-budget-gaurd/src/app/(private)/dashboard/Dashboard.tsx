@@ -27,9 +27,9 @@ export default function Dashboard({ isAccountLimited }: { isAccountLimited: bool
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const exceededBudgetLimits = useMemo(() => budgetLimits.filter((bl) => bl.currentUsage > bl.amount), [budgetLimits]);
+  const exceededBudgetLimits = useMemo(() => budgetLimits.filter((bl) => bl.currentUsage >= bl.amount), [budgetLimits]);
 
-  console.log("Exceeded budget limits:", exceededBudgetLimits);
+  console.log("Exceeded budget limits:", exceededBudgetLimits, isAccountLimited);
   // Fetch budget limits from the database
   useEffect(() => {
     const fetchBudgetLimits = async () => {
