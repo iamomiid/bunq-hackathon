@@ -31,7 +31,6 @@ export const POST = async (req: NextRequest) => {
   const parseOutput = webhookSchema.safeParse(body);
 
   if (!parseOutput.success) {
-    console.log(parseOutput.error);
     return new Response("Invalid request body", { status: 200 });
   }
 
@@ -61,7 +60,6 @@ export const POST = async (req: NextRequest) => {
     .from(budgetLimit)
     .where(eq(budgetLimit.userId, paymentUser.id));
 
-  console.log(userCategories);
   const { object } = await generateObject({
     model: openai("gpt-4.1-mini"),
     prompt: `You are a multi‑label transaction categorisation assistant.

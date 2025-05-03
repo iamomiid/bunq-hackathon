@@ -11,8 +11,5 @@ bunqClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    console.log(error.response.data);
-    return error.response.data;
-  },
+  (error) => Promise.reject(error.response.data),
 );
