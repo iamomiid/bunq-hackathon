@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import db from "@/db";
+import { db } from "@/db";
 import { user } from "@/db/schema/tables";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
@@ -44,10 +44,8 @@ export async function POST(req: Request) {
       userId = existingUser[0].id;
     } else {
       // Create new user
-      const generatedKey = (await import("../../../../lib/bunq/client-key")) as ClientKey;
-      const generateSignature = (await import("../../../../lib/bunq/session").then(
-        (v) => v.default,
-      )) as GenerateSignature;
+      const generatedKey = require("../../../../lib/bunq/client-key") as ClientKey;
+      const generateSignature = require("../../../../lib/bunq/session") as GenerateSignature;
       console.log("Generated Key");
 
       const installation = await bunqClient

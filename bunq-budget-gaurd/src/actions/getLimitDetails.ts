@@ -1,6 +1,6 @@
 "use server";
 import { eq, sql } from "drizzle-orm";
-import db from "../db";
+import { db } from "../db";
 import { budgetLimitsWithUsage } from "../db/schema/views";
 import { transaction, transactionToBudgetLimit } from "../db/schema/tables";
 import { notFound } from "next/navigation";

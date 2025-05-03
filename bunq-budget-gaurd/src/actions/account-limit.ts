@@ -2,7 +2,7 @@
 
 import { bunqClient } from "@/lib/bunq/client";
 import { eq } from "drizzle-orm";
-import db from "../db";
+import { db } from "../db";
 import { getSession } from "@/lib/auth";
 import { user } from "../db/schema/tables";
 import type { PaymentAccountDetailsResponse } from "@/lib/bunq/types";

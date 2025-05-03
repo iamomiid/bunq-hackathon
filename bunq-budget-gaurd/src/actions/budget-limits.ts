@@ -2,7 +2,7 @@
 
 import { budgetLimit, transaction, transactionToBudgetLimit } from "../db/schema/tables";
 import { eq } from "drizzle-orm";
-import db from "../db";
+import { db } from "../db";
 import { v4 as uuidv4 } from "uuid";
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";

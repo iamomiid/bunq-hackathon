@@ -1,6 +1,6 @@
 "use server";
 import { getSession } from "@/lib/auth";
-import db from "../db";
+import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { user } from "../db/schema/tables";
 import { bunqClient } from "@/lib/bunq/client";
