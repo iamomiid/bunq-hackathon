@@ -14,9 +14,14 @@ People often lose track of their spending. Budget Guard sets spending limits and
 
 ## Tech Stack
 - **Next.js** for the web app  
-- **Drizzle ORM** for database management  
-- **Bunq API** to connect to your bank account 
+- **AWS** amplify and rout53 for hosting
+- **Node.js** for the backend
+- **TypeScript** for type safety
+- **React** for the frontend
+- **Drizzle ORM** for database  
+- **PostgreSQL** as the database  
+- **Bunq API** for banking integration  
 - **Neon** for the database
 - **NvidiaCHAT** llama-3.1-70b-instruct for AI processing
-- **OpenAI** GPT to generate text
-- **Tailwind CSS** for styling
+- **OpenAI** GPT for natural-language processing  
+- **Tailwind CSS** for styling  

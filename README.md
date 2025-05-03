@@ -3,11 +3,15 @@
 **Smart budgeting with AI for your Bunq card.**
 
 ## Quick Links
-- [Getting Started](docs/getting-started.md)  
-- [Installation](docs/getting-started.md#install-dependencies)  
-- [User Guide](docs/how-it-works.md)  
-- [API Reference](docs/api-reference.md)  
-- [How to Contribute](docs/contributing.md)  
+- [About](docs/about.md)
+- [API Reference](docs/API_Reference.md)
+- [FAQ](docs/FAQ.md)
+- [Features](docs/features.md)
+- [Getting Started](docs/getting_started.md)
+- [How It Works](docs/How_It_Works.md)
+- [Project Structure](docs/Project_Structure.md)
+
+
 
 ## Description
 Bunq Budget Guard helps you stay on budget. You write simple rules in English, like “Limit groceries to €200 per month.” Our AI watches your Bunq card, blocks purchases that break your rules, and lets you ask for a one-time unblock if you need it.
@@ -21,11 +25,18 @@ Bunq Budget Guard helps you stay on budget. You write simple rules in English, l
 
 ## Tech Stack
 - **Next.js** for the web app  
+- **AWS** amplify and rout53 for hosting
+- **Node.js** for the backend
+- **TypeScript** for type safety
+- **React** for the frontend
 - **Drizzle ORM** for database  
 - **PostgreSQL** as the database  
 - **Bunq API** for banking integration  
-- **OpenAI GPT** for natural-language processing  
+- **Neon** for the database
+- **NvidiaCHAT** llama-3.1-70b-instruct for AI processing
+- **OpenAI** GPT for natural-language processing  
 - **Tailwind CSS** for styling  
+
 
 ## Getting Started
 
