@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export interface BunqCreateUserResponse {
   Response: BunqCreateUser[];
 }

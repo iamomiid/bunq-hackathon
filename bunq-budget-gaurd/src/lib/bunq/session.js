@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // Library: nanoid/non-secure
 
 var get_id = function (r) {

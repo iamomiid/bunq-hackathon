@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import z from "zod";
 import db from "../../../../db";
 import { budgetLimit, transaction, transactionToBudgetLimit, user } from "../../../../db/schema/tables";
-import { eq, lte } from "drizzle-orm";
+import { eq, gte, lte } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { budgetLimitsWithUsage } from "../../../../db/schema/views";
 
@@ -32,7 +32,7 @@ export const POST = async (req: NextRequest) => {
 
   if (!parseOutput.success) {
     console.log(parseOutput.error);
-    return new Response("Invalid request body", { status: 400 });
+    return new Response("Invalid request body", { status: 200 });
   }
 
   const parsedBody = parseOutput.data;
@@ -46,7 +46,7 @@ export const POST = async (req: NextRequest) => {
   });
 
   if (!paymentUser) {
-    return new Response("User not found", { status: 404 });
+    return new Response("User not found", { status: 200 });
   }
 
   const amount = parseFloat(parsedBody.NotificationUrl.object.Payment.amount.value);
@@ -93,17 +93,19 @@ Categories: "${userCategories.map((c) => `ID: ${c.id}, Category: ${c.category}`)
     })
     .returning();
 
-  await db.insert(transactionToBudgetLimit).values(
-    object.categories.map((category) => ({
-      transactionId: newTransaction.id,
-      budgetLimitId: category,
-    })),
-  );
+  if (object.categories.length > 0) {
+    await db.insert(transactionToBudgetLimit).values(
+      object.categories.map((category) => ({
+        transactionId: newTransaction.id,
+        budgetLimitId: category,
+      })),
+    );
+  }
 
   const threshold = await db
     .select()
     .from(budgetLimitsWithUsage)
-    .where(lte(budgetLimitsWithUsage.currentUsage, budgetLimitsWithUsage.amount));
+    .where(gte(budgetLimitsWithUsage.currentUsage, budgetLimitsWithUsage.amount));
 
   if (threshold.length > 0) {
     return new Response("Threshold exceeded", { status: 200 });
