@@ -1,14 +1,15 @@
 import { LoginForm } from "@/components/login-form";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
+          <Link href="/" className="flex items-center gap-2 font-medium">
             <img src="/logo.png" alt="Logo" width={32} height={32} />
             <span className="font-bold text-xl text-primary">BudgetGuard</span>
-          </a>
+          </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
