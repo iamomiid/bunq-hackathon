@@ -125,7 +125,7 @@ export default function LimitDetailsPage() {
                 {limitData.transactions.map((transaction: Transaction) => (
                   <div key={transaction.id} className="flex justify-between items-center border-b pb-2">
                     <div>
-                      <p className="font-medium">{transaction.merchant}</p>
+                      <p className="font-medium">{transaction.description}</p>
                       <div className="flex items-center text-xs text-muted-foreground">
                         <Clock className="h-3 w-3 mr-1" />
                         <time dateTime={transaction.date}>{new Date(transaction.date).toLocaleDateString()}</time>

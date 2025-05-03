@@ -10,6 +10,7 @@ export type Transaction = {
   merchant: string;
   amount: number;
   date: string;
+  description: string;
 };
 
 export type BudgetLimitWithTransactions = {
@@ -34,6 +35,7 @@ type TransactionJson = {
         counterparty_alias?: {
           display_name?: string;
         };
+        description?: string;
       };
     };
   };
@@ -79,6 +81,7 @@ export async function getLimitDetails(limitId: string): Promise<BudgetLimitWithT
       merchant,
       amount: Math.abs(amount), // Use absolute value for display
       date: t.createdAt.toISOString(),
+      description: paymentData?.description || "",
     };
   });
 
