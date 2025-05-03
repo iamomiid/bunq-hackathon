@@ -5,6 +5,7 @@ import {
   decimal,
   timestamp,
   integer,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -26,5 +27,12 @@ export const budgetLimit = pgTable("budget_limit", {
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   period: text("period").default("month").notNull(),
   strictnessLevel: integer("strictness_level").default(5).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const transaction = pgTable("transaction", {
+  id: uuid("id").primaryKey(),
+  budgetLimit: uuid("budget_limit").references(() => budgetLimit.id),
+  json: jsonb("json").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

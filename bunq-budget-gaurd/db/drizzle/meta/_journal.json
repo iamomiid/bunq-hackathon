@@ -8,6 +8,13 @@
       "when": 1746227034219,
       "tag": "0000_cold_hercules",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1746231551134,
+      "tag": "0001_flaky_angel",
+      "breakpoints": true
     }
   ]
 }
