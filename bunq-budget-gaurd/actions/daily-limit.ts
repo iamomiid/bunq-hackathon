@@ -1,3 +1,4 @@
+"use server";
 import { getSession } from "@/lib/auth";
 import db from "../db";
 import { eq } from "drizzle-orm";

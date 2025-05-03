@@ -1,3 +1,5 @@
+"use server";
+
 import { bunqClient } from "@/lib/bunq/client";
 import { eq } from "drizzle-orm";
 import db from "../db";

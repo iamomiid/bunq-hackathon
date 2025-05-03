@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { extractLimitDetails, createBudgetLimit } from "../../../../../actions/budget-limits";
 import { handleApiResponse } from "@/lib/api-response";
+import { Label } from "@/components/ui/label";
 
 interface BudgetLimit {
   category: string;
@@ -19,6 +20,7 @@ interface BudgetLimit {
   period: string;
   strictness: "flexible" | "moderate" | "strict";
   title?: string;
+  strictnessValue?: number;
 }
 
 export default function CreateLimit() {
@@ -29,6 +31,13 @@ export default function CreateLimit() {
   const [extractedLimit, setExtractedLimit] = useState<BudgetLimit | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [strictnessValue, setStrictnessValue] = useState(5);
+
+  const getStrictnessLabel = (value: number): string => {
+    if (value <= 3) return "Flexible";
+    if (value <= 7) return "Moderate";
+    return "Strict";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +60,11 @@ export default function CreateLimit() {
     }
 
     if (data) {
-      setExtractedLimit(data);
+      // Add the strictness value to the extracted limit
+      setExtractedLimit({
+        ...data,
+        strictnessValue: strictnessValue,
+      });
       console.log("Extracted limit details:", data);
     }
   };
@@ -61,7 +74,13 @@ export default function CreateLimit() {
     setError(null);
     setSuccess(null);
 
-    const { data, error: saveError } = await handleApiResponse(createBudgetLimit(input));
+    // Include strictness value in the saved limit
+    const limitWithStrictness = {
+      ...extractedLimit,
+      strictnessValue: strictnessValue,
+    };
+
+    const { data, error: saveError } = await handleApiResponse(createBudgetLimit(input, strictnessValue));
 
     setIsSaving(false);
 
@@ -121,6 +140,29 @@ export default function CreateLimit() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <div className="flex flex-row items-center space-x-2">
+                  <Label htmlFor="strictness" className="text-sm font-medium block mb-1 w-1/2">
+                    Strictness Level: {strictnessValue} - {getStrictnessLabel(strictnessValue)}
+                  </Label>
+                  <div className="flex items-center space-x-2 justify-between  w-1/2">
+                    <input
+                      id="strictness"
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="1"
+                      value={strictnessValue}
+                      onChange={(e) => setStrictnessValue(parseInt(e.target.value))}
+                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Set how strict this budget limit should be enforced. Higher values make it harder to bypass the limit.
+                </p>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertTitle>Error</AlertTitle>
@@ -153,6 +195,7 @@ export default function CreateLimit() {
                       </p>
                       <p>
                         <strong>Strictness:</strong> {extractedLimit.strictness}
+                        {extractedLimit.strictnessValue ? ` (${extractedLimit.strictnessValue}/10)` : ""}
                       </p>
                     </div>
                   </AlertDescription>

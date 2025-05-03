@@ -125,7 +125,7 @@ export async function extractLimitDetails(description: string) {
   }
 }
 
-export async function createBudgetLimit(description: string) {
+export async function createBudgetLimit(description: string, strictnessValue?: number) {
   try {
     const session = await getSession();
 
@@ -150,7 +150,7 @@ export async function createBudgetLimit(description: string) {
       strict: 10,
     };
 
-    // Create budget limit
+    // Create budget limit - use provided strictnessValue if available
     const [newBudgetLimit] = await db
       .insert(budgetLimit)
       .values({
@@ -158,7 +158,7 @@ export async function createBudgetLimit(description: string) {
         category: limitDetails.category,
         amount: String(limitDetails.amount), // Convert amount to string for DB schema
         period: limitDetails.period,
-        strictnessLevel: strictnessMap[limitDetails.strictness] || 5,
+        strictnessLevel: strictnessValue || strictnessMap[limitDetails.strictness] || 5,
         title: limitDetails.title,
         userId,
       })
