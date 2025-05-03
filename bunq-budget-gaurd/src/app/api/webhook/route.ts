@@ -103,12 +103,14 @@ Categories: "${userCategories.map((c) => `ID: ${c.id}, Category: ${c.category}`)
     );
   }
 
-  const threshold = await db
+  const userBudgetViews = await db
     .select()
     .from(budgetLimitsWithUsage)
-    .where(gte(budgetLimitsWithUsage.currentUsage, budgetLimitsWithUsage.amount));
+    .where(eq(budgetLimitsWithUsage.userId, paymentUser.id));
 
-  if (threshold.length > 0) {
+  const anyThresholdExceeded = userBudgetViews.some((view) => Number(view.currentUsage) >= Number(view.amount));
+
+  if (anyThresholdExceeded) {
     await setDailyLimit(0, paymentUser.externalId, paymentUser.accountId, paymentUser.sessionToken);
     return new Response("Threshold exceeded", { status: 200 });
   }
