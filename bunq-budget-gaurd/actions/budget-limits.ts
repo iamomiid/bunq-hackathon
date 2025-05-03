@@ -112,7 +112,7 @@ export async function extractLimitDetails(description: string) {
     }
 
     const { object } = await generateObject({
-      model: openai("gpt-4.1-mini"),
+      model: openai("gpt-4o-mini"),
       prompt: createLimitPrompt(description),
       temperature: 0.1,
       schema: limitDetailsSchema,

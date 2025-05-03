@@ -194,8 +194,8 @@ export default function CreateLimit() {
                         <strong>Time Period:</strong> {extractedLimit.period}
                       </p>
                       <p>
-                        <strong>Strictness:</strong> {extractedLimit.strictness}
-                        {extractedLimit.strictnessValue ? ` (${extractedLimit.strictnessValue}/10)` : ""}
+                        <strong>Strictness:</strong>
+                        {extractedLimit.strictnessValue ? ` ${extractedLimit.strictnessValue}/10` : ""}
                       </p>
                     </div>
                   </AlertDescription>
@@ -205,12 +205,19 @@ export default function CreateLimit() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <Button onClick={handleSubmit} className="w-full" disabled={isProcessing || !input.trim()}>
+          <Button
+            onClick={handleSubmit}
+            className="w-full"
+            disabled={isProcessing || !input.trim()}
+            variant={extractedLimit ? "outline" : "default"}
+          >
             {isProcessing ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Analyzing...
               </>
+            ) : extractedLimit ? (
+              "Try again"
             ) : (
               "Extract Limit"
             )}
