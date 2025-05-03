@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { getSession } from "../src/lib/auth";
+import { z } from "zod";
 
 // Define the transaction JSON structure we expect
 interface TransactionJson {
@@ -14,14 +15,14 @@ interface TransactionJson {
   [key: string]: unknown;
 }
 
-interface LimitDetails {
-  category: string;
-  amount: number;
-  currency: string;
-  period: string;
-  strictness: "flexible" | "moderate" | "strict";
-  title: string;
-}
+const limitDetailsSchema = z.object({
+  category: z.string(),
+  amount: z.number(),
+  currency: z.string(),
+  period: z.string(),
+  strictness: z.enum(["flexible", "moderate", "strict"]),
+  title: z.string(),
+});
 
 export async function getBudgetLimits() {
   try {
@@ -106,11 +107,10 @@ export async function extractLimitDetails(description: string) {
               - period: The time period (e.g., day, week, month)
               - strictness: Estimated strictness level (flexible, moderate, strict) based on wording`,
       temperature: 0.1,
-      output: "no-schema",
+      schema: limitDetailsSchema,
     });
 
-    // Parse the response as JSON - Use unknown for safer type assertion
-    return object as unknown as LimitDetails;
+    return object;
   } catch (error) {
     console.error("Error extracting limit details:", error);
     throw new Error("Failed to extract limit details");
@@ -142,17 +142,17 @@ export async function createBudgetLimit(description: string) {
       strict: 10,
     };
 
-    // Create budget limit using the category as a string directly
+    // Create budget limit
     const [newBudgetLimit] = await db
       .insert(budgetLimit)
       .values({
         id: uuidv4(),
-        userId,
         category: limitDetails.category,
         amount: String(limitDetails.amount), // Convert amount to string for DB schema
         period: limitDetails.period,
         strictnessLevel: strictnessMap[limitDetails.strictness] || 5,
         title: limitDetails.title,
+        userId,
       })
       .returning();
 

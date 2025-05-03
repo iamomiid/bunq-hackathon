@@ -34,6 +34,9 @@ export const budgetLimitRelations = relations(budgetLimit, ({ one, many }) => ({
 export const transaction = pgTable("transaction", {
   id: uuid("id").primaryKey(),
   json: jsonb("json").notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
