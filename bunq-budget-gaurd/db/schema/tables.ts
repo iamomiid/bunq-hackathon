@@ -60,6 +60,7 @@ export const transactionToBudgetLimit = pgTable(
     budgetLimitId: uuid("budget_limit_id")
       .notNull()
       .references(() => budgetLimit.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.transactionId, t.budgetLimitId] }),

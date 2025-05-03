@@ -56,3 +56,4 @@ export const budgetLimitsWithUsage = pgView("budget_limits_with_usage").as((qb) 
       .leftJoin(monthlySumsSubquery, sql`${budgetLimit.id} = ${monthlySumsSubquery.budgetLimitId}`)
   );
 });
+export type SelectBudgetLimit = typeof budgetLimitsWithUsage.$inferSelect;
