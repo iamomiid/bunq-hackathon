@@ -11,7 +11,7 @@ var get_id = function (r) {
 
 // Hacks: jsrsassign needs those structures and fails otherwise
 
-navigator = { name: "Postman", version: "1.0" };
+// navigator = { name: "Postman", version: "1.0" };
 // window = {};
 
 // Library: jsrsasign
@@ -50,7 +50,7 @@ YAHOO.lang = {
       var e = function () {},
         c = ["toString", "valueOf"];
       try {
-        if (/MSIE/.test(navigator.userAgent)) {
+        if (typeof navigator !== "undefined" && /MSIE/.test(navigator.userAgent)) {
           e = function (j, i) {
             for (b = 0; b < c.length; b = b + 1) {
               var l = c[b],
@@ -2414,11 +2414,11 @@ function am3(f, q, r, e, o, a) {
   }
   return o;
 }
-if (j_lm && navigator.appName == "Microsoft Internet Explorer") {
+if (j_lm && typeof navigator !== "undefined" && navigator.appName == "Microsoft Internet Explorer") {
   BigInteger.prototype.am = am2;
   dbits = 30;
 } else {
-  if (j_lm && navigator.appName != "Netscape") {
+  if (j_lm && typeof navigator !== "undefined" && navigator.appName != "Netscape") {
     BigInteger.prototype.am = am1;
     dbits = 26;
   } else {
@@ -3985,7 +3985,7 @@ if (rng_pool == null) {
         rng_pool[rng_pptr++] = ua[t];
       }
     } else {
-      if (navigator.appName == "Netscape" && navigator.appVersion < "5") {
+      if (typeof navigator !== "undefined" && navigator.appName == "Netscape" && navigator.appVersion < "5") {
         var z = window.crypto.random(32);
         for (t = 0; t < z.length; ++t) {
           rng_pool[rng_pptr++] = z.charCodeAt(t) & 255;
