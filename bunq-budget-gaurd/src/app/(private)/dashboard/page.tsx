@@ -2,21 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Trash2, Eye } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import {
-  getBudgetLimits,
-  deleteBudgetLimit,
-} from "../../../../actions/budget-limits";
+import { getBudgetLimits, deleteBudgetLimit } from "../../../../actions/budget-limits";
 
 // Define the budget limit type
 interface BudgetLimit {
@@ -93,7 +83,7 @@ export default function Dashboard() {
         <div className="bg-destructive/10 rounded-lg p-6 text-center">
           <h3 className="text-lg font-medium mb-2 text-destructive">Error</h3>
           <p className="mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
+          {/* <Button onClick={() => window?.location.reload()}>Try Again</Button> */}
         </div>
       </>
     );
@@ -106,9 +96,7 @@ export default function Dashboard() {
       {budgetLimits.length === 0 ? (
         <div className="bg-muted/50 rounded-lg p-8 text-center">
           <h3 className="text-lg font-medium mb-2">No budget limits yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Create your first budget limit to start tracking your spending
-          </p>
+          <p className="text-muted-foreground mb-4">Create your first budget limit to start tracking your spending</p>
           <Button asChild>
             <Link href="/dashboard/create-limit">
               <PlusCircle className="mr-2 h-4 w-4" />
@@ -122,18 +110,14 @@ export default function Dashboard() {
             <Card key={limit.id} className="overflow-hidden">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">{limit.title}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {limit.description}
-                </CardDescription>
+                <CardDescription className="line-clamp-2">{limit.description}</CardDescription>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="mb-4">
                   <p className="text-sm font-medium text-muted-foreground mb-1">
                     {limit.period} limit: €{limit.amount.toFixed(2)}
                   </p>
-                  <p className="text-sm font-medium mb-1">
-                    Spent: €{limit.currentSpent.toFixed(2)}
-                  </p>
+                  <p className="text-sm font-medium mb-1">Spent: €{limit.currentSpent.toFixed(2)}</p>
                   <p className="text-sm font-medium mb-2">
                     Remaining: €{(limit.amount - limit.currentSpent).toFixed(2)}
                   </p>
@@ -160,27 +144,15 @@ export default function Dashboard() {
                 </Button>
                 {deleteConfirmId === limit.id ? (
                   <div className="flex gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setDeleteConfirmId(null)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => setDeleteConfirmId(null)}>
                       Cancel
                     </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteLimit(limit.id)}
-                    >
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteLimit(limit.id)}>
                       Confirm
                     </Button>
                   </div>
                 ) : (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => setDeleteConfirmId(limit.id)}
-                  >
+                  <Button variant="destructive" size="sm" onClick={() => setDeleteConfirmId(limit.id)}>
                     <Trash2 className="h-3.5 w-3.5 mr-1" />
                     Delete
                   </Button>

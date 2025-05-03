@@ -7,11 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useRouter } from "next/navigation";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
+  const router = useRouter();
   const [apiKey, setApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,25 +37,17 @@ export function LoginForm({
         throw new Error(errorData.error || "Failed to login");
       }
 
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Login failed. Please try again."
-      );
+      setError(error instanceof Error ? error.message : "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleSubmit}
-    >
+    <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login with API Key</h1>
         <p className="text-muted-foreground text-sm text-balance">
@@ -82,11 +73,7 @@ export function LoginForm({
             disabled={isLoading}
           />
         </div>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading || !apiKey.trim()}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading || !apiKey.trim()}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

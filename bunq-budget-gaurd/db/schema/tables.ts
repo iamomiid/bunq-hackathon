@@ -4,7 +4,14 @@ import { relations } from "drizzle-orm";
 export const user = pgTable("user", {
   id: uuid("id").primaryKey(),
   apiKey: text("api_key").notNull(),
-  accountId: text("account_id"),
+  accountId: text("account_id").notNull(),
+  privateKey: text("private_key").notNull(),
+  publicKey: text("public_key").notNull(),
+  publicKeyFmt: text("public_key_fmt").notNull(),
+  installationToken: text("installation_token").notNull(),
+  sessionToken: text("session_token").notNull(),
+  deviceId: text("device_id").notNull(),
+  externalId: text("external_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

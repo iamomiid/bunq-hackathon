@@ -1,1 +1,0 @@
-ALTER TABLE "budget_limit" ADD COLUMN "title" text;
