@@ -9,22 +9,7 @@ export const user = pgTable("user", {
 });
 
 export const userRelations = relations(user, ({ many }) => ({
-  categories: many(category),
   budgetLimits: many(budgetLimit),
-}));
-
-export const category = pgTable("category", {
-  id: uuid("id").primaryKey(),
-  name: text("name").notNull(),
-  userId: uuid("user_id").references(() => user.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const categoryRelations = relations(category, ({ one }) => ({
-  user: one(user, {
-    fields: [category.userId],
-    references: [user.id],
-  }),
 }));
 
 export const budgetLimit = pgTable("budget_limit", {

@@ -50,6 +50,13 @@
       "when": 1746236227674,
       "tag": "0006_sharp_gravity",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1746237516165,
+      "tag": "0007_minor_lionheart",
+      "breakpoints": true
     }
   ]
 }
