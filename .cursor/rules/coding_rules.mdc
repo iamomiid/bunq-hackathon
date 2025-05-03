@@ -4,3 +4,4 @@ globs:
 alwaysApply: true
 ---
 * the project is at ./bunq-budget-guard, DO ALL THE CODE CHANGES IN ./bunq-budget-guard
+* add all the server actions to ./bunq-budget-gaurd/actions
