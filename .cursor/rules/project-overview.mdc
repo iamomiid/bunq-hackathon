@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Bunq Budget Guard - Project Overview
+
+This project is a Next.js application located in the `bunq-budget-gaurd` directory.
+
+## Key Directories & Files
+
+*   **API Routes**: `bunq-budget-gaurd/src/app/api/` - Contains server-side API logic.
+    *   Auth Login: [route.ts](mdc:bunq-budget-gaurd/src/app/api/auth/login/route.ts)
+    *   Auth Session Check: [route.ts](mdc:bunq-budget-gaurd/src/app/api/auth/session/route.ts)
+    *   Budget Limit Extraction: [route.ts](mdc:bunq-budget-gaurd/src/app/api/extract-limit/route.ts)
+*   **Library Code**: `bunq-budget-gaurd/src/lib/` - Shared utilities.
+    *   Auth Helpers: [auth.ts](mdc:bunq-budget-gaurd/src/lib/auth.ts)
+*   **Database**: `bunq-budget-gaurd/db/` - Likely contains schema and migration files.
+    *   Drizzle Config: [drizzle.config.ts](mdc:bunq-budget-gaurd/drizzle.config.ts)
+    *   Schema (assumed): `bunq-budget-gaurd/db/schema/tables.ts`
+*   **Next.js Config**: [next.config.ts](mdc:bunq-budget-gaurd/next.config.ts)
+*   **TypeScript Config**: [tsconfig.json](mdc:bunq-budget-gaurd/tsconfig.json) (Defines `@/*` path alias for `src/`)
+
+## Core Functionality
+
+1.  **Authentication**: Uses encrypted HTTP-only cookies. See [authentication.mdc](mdc:.cursor/rules/authentication.mdc) for details.
+2.  **Budget Limit Extraction**: The [route.ts](mdc:bunq-budget-gaurd/src/app/api/extract-limit/route.ts) endpoint uses an AI model (`ai` SDK) to parse natural language descriptions of budget limits into structured data.

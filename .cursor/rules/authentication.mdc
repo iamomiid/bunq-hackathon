@@ -1,0 +1,39 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Authentication Flow
+
+Authentication relies on storing the user's Bunq API key in an encrypted, HTTP-only session cookie.
+
+## Key Components
+
+*   **Auth Library**: [auth.ts](mdc:bunq-budget-gaurd/src/lib/auth.ts)
+    *   Uses `@hapi/iron` for encryption/decryption.
+    *   Relies on the `SESSION_SECRET` environment variable for the encryption key.
+    *   `setSessionCookie(data)`: Encrypts data and sets the `bunq_session` cookie.
+    *   `getSession()`: Reads and decrypts the cookie, returning session data (including `apiKey`). Server-side only.
+    *   `getApiKeyFromSession()`: Helper to specifically retrieve the `apiKey` from the session. Server-side only.
+    *   `clearSessionCookie()`: Deletes the session cookie (for logout).
+*   **Login Endpoint**: [route.ts](mdc:bunq-budget-gaurd/src/app/api/auth/login/route.ts)
+    *   Handles POST requests to `/api/auth/login`.
+    *   Expects `{ "apiKey": "..." }` in the request body.
+    *   Calls `setSessionCookie` to store the key.
+    *   **Important:** Currently lacks Bunq API key validation.
+*   **Session Check Endpoint**: [route.ts](mdc:bunq-budget-gaurd/src/app/api/auth/session/route.ts)
+    *   Handles GET requests to `/api/auth/session`.
+    *   Used by Client Components to check login status.
+    *   Calls `getSession` server-side.
+    *   Returns `{ "isLoggedIn": boolean }`.
+    *   **Does not** expose the raw API key to the client.
+
+## Flow
+
+1.  User submits their Bunq API key to the frontend.
+2.  Frontend sends a POST request with the key to `/api/auth/login`.
+3.  The login endpoint validates the key (TODO) and calls `setSessionCookie`.
+4.  An encrypted, HTTP-only cookie (`bunq_session`) is sent back to the browser.
+5.  Subsequent requests from the browser automatically include this cookie.
+6.  Server-side code (API routes, Server Components) uses `getApiKeyFromSession()` or `getSession()` to retrieve the key from the cookie for authenticated actions.
+7.  Client Components call `/api/auth/session` to check if the user is logged in, without accessing the cookie directly.

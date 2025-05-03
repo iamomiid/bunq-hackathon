@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+* the project is at ./bunq-budget-guard, DO ALL THE CODE CHANGES IN ./bunq-budget-guard
