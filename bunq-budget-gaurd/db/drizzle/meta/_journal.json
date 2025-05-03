@@ -22,6 +22,27 @@
       "when": 1746233146919,
       "tag": "0002_wealthy_lenny_balinger",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746235321062,
+      "tag": "0003_colorful_tomas",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1746235885323,
+      "tag": "0004_chemical_bloodstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1746236171735,
+      "tag": "0005_vengeful_moondragon",
+      "breakpoints": true
     }
   ]
 }
