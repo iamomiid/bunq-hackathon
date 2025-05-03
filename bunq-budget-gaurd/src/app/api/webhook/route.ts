@@ -41,6 +41,8 @@ export const POST = async (req: NextRequest) => {
     return new Response("Not an outgoing payment", { status: 200 });
   }
 
+  console.log("parsedBody", parsedBody.NotificationUrl.object.Payment);
+
   const paymentUser = await db.query.user.findFirst({
     where: eq(user.accountId, parsedBody.NotificationUrl.object.Payment.monetary_account_id.toString()),
   });
@@ -107,7 +109,7 @@ Categories: "${userCategories.map((c) => `ID: ${c.id}, Category: ${c.category}`)
     .where(gte(budgetLimitsWithUsage.currentUsage, budgetLimitsWithUsage.amount));
 
   if (threshold.length > 0) {
-    await setDailyLimit(0);
+    await setDailyLimit(0, paymentUser.externalId, paymentUser.accountId, paymentUser.sessionToken);
     return new Response("Threshold exceeded", { status: 200 });
   }
 

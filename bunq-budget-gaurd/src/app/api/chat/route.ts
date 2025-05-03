@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, CoreMessage, createDataStreamResponse, tool, Message } from "ai";
 import { NextRequest } from "next/server";
-import { setDailyLimit } from "@/actions/daily-limit";
+import { setUserDailyLimit } from "@/actions/daily-limit";
 import { getLimitById } from "@/actions/budget-limits";
 import { SelectBudgetLimit } from "@/db/schema/views";
 import { z } from "zod";
@@ -29,7 +29,7 @@ const tools = {
       if (decision === "APPROVED") {
         try {
           // Set a high daily limit to allow the transaction
-          await setDailyLimit(10_000);
+          await setUserDailyLimit(10_000);
           return { status: "success", message: "Card temporarily unblocked for this transaction." };
         } catch (error) {
           console.error("Failed to update unblock status:", error);

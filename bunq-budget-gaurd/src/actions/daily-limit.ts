@@ -6,7 +6,24 @@ import { user } from "../db/schema/tables";
 import { bunqClient } from "@/lib/bunq/client";
 import { redirect } from "next/navigation";
 
-export const setDailyLimit = async (amount: number) => {
+export const setDailyLimit = async (amount: number, userId: string, accountId: string, token: string) => {
+  return await bunqClient.put(
+    `/v1/user/${userId}/monetary-account-bank/${accountId}`,
+    {
+      daily_limit: {
+        currency: "EUR",
+        value: amount.toString(),
+      },
+    },
+    {
+      headers: {
+        "X-Bunq-Client-Authentication": token,
+      },
+    },
+  );
+};
+
+export const setUserDailyLimit = async (amount: number) => {
   console.log("Setting daily limit:", amount);
   const session = await getSession();
 
@@ -22,22 +39,7 @@ export const setDailyLimit = async (amount: number) => {
     throw new Error("User not found");
   }
 
-  await bunqClient
-    .put(
-      `/v1/user/${dbUser.externalId}/monetary-account-bank/${dbUser.accountId}`,
-      {
-        daily_limit: {
-          currency: "EUR",
-          value: amount.toString(),
-        },
-      },
-      {
-        headers: {
-          "X-Bunq-Client-Authentication": dbUser.sessionToken,
-        },
-      },
-    )
-    .then((res) => {
-      redirect("/dashboard");
-    });
+  await setDailyLimit(amount, dbUser.externalId, dbUser.accountId, dbUser.sessionToken).then((res) => {
+    redirect("/dashboard");
+  });
 };
