@@ -2,11 +2,11 @@ import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { NextResponse, type NextRequest } from "next/server";
 import z from "zod";
-import db from "../../../../db";
-import { budgetLimit, transaction, transactionToBudgetLimit, user } from "../../../../db/schema/tables";
+import db from "@/db";
+import { budgetLimit, transaction, transactionToBudgetLimit, user } from "@/db/schema/tables";
 import { eq, gte, lte } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { budgetLimitsWithUsage } from "../../../../db/schema/views";
+import { budgetLimitsWithUsage } from "@/db/schema/views";
 
 const webhookSchema = z.object({
   NotificationUrl: z.object({

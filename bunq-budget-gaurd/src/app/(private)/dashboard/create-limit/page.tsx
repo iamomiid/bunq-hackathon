@@ -9,7 +9,7 @@ import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
-import { extractLimitDetails, createBudgetLimit } from "../../../../../actions/budget-limits";
+import { extractLimitDetails, createBudgetLimit } from "@/actions/budget-limits";
 import { handleApiResponse } from "@/lib/api-response";
 import { Label } from "@/components/ui/label";
 

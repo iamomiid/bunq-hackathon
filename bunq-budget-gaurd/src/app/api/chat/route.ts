@@ -1,11 +1,11 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, CoreMessage, createDataStreamResponse, tool, Message } from "ai";
 import { NextRequest } from "next/server";
-import { setDailyLimit } from "../../../../actions/daily-limit";
-import { getLimitById } from "../../../../actions/budget-limits";
-import { SelectBudgetLimit } from "../../../../db/schema/views";
+import { setDailyLimit } from "@/actions/daily-limit";
+import { getLimitById } from "@/actions/budget-limits";
+import { SelectBudgetLimit } from "@/db/schema/views";
 import { z } from "zod";
-import { convincingPrompt } from "../../../../prompts/convincing";
+import { convincingPrompt } from "@/prompts/convincing";
 
 const nvidia = createOpenAI({
   baseURL: "https://api.nvidia.com/v1",

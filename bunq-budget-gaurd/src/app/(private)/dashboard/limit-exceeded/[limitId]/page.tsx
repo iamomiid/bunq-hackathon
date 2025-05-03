@@ -1,5 +1,5 @@
-import { getLimitById } from "../../../../../../actions/budget-limits";
-import { isAccountLimited } from "../../../../../../actions/account-limit";
+import { getLimitById } from "@/actions/budget-limits";
+import { isAccountLimited } from "@/actions/account-limit";
 import LimitExceededClient from "./LimitExceededClient";
 
 export default async function LimitExceededPage({ params }: { params: Promise<{ limitId: string }> }) {

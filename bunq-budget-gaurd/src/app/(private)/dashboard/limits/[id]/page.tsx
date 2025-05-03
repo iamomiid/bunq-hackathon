@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Clock, Calendar, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { BudgetLimitWithTransactions, getLimitDetails, Transaction } from "../../../../../../actions/getLimitDetails";
+import { BudgetLimitWithTransactions, getLimitDetails, Transaction } from "@/actions/getLimitDetails";
 
 export default function LimitDetailsPage() {
   const { id } = useParams();

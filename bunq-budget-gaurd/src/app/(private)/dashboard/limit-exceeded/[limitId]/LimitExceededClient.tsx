@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useChat } from "@ai-sdk/react";
-import { SelectBudgetLimit } from "../../../../../../db/schema/views";
+import { SelectBudgetLimit } from "@/db/schema/views";
 
 interface LimitExceededClientProps {
   limitDetails: SelectBudgetLimit;

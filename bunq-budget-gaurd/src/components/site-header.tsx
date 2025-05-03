@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { usePathname } from "next/navigation";
-import { logoutAction } from "../../actions/auth-actions";
+import { logoutAction } from "@/actions/auth-actions";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -23,10 +23,7 @@ export function SiteHeader() {
         <nav className="hidden md:flex items-center gap-6">
           {isDashboard ? (
             <>
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-foreground transition-colors"
-              >
+              <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors">
                 Dashboard
               </Link>
               <Link
@@ -67,12 +64,7 @@ export function SiteHeader() {
             </Button>
           ) : (
             <>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="hidden md:flex"
-              >
+              <Button asChild variant="outline" size="sm" className="hidden md:flex">
                 <Link href="/login">Log In</Link>
               </Button>
               <Button asChild size="sm">

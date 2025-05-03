@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import db from "../../../../../db";
-import { user } from "../../../../../db/schema/tables";
+import db from "@/db";
+import { user } from "@/db/schema/tables";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import Iron from "@hapi/iron";

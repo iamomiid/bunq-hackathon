@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { PlusCircle, Trash2, Eye, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { getBudgetLimits, deleteBudgetLimit } from "../../../../actions/budget-limits";
+import { getBudgetLimits, deleteBudgetLimit } from "@/actions/budget-limits";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Define the budget limit type

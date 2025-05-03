@@ -6,10 +6,10 @@ import db from "../db";
 import { v4 as uuidv4 } from "uuid";
 import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { getSession } from "../src/lib/auth";
 import { z } from "zod";
 import { budgetLimitsWithUsage } from "../db/schema/views";
 import { createLimitPrompt } from "../prompts/create-limit";
+import { getSession } from "@/lib/auth";
 // Define the transaction JSON structure we expect
 interface TransactionJson {
   amount?: string | number;
